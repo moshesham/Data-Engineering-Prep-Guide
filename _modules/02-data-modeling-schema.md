@@ -8,6 +8,9 @@ permalink: /modules/data-modeling-schema/
 
 **Core job:** design a model that supports the metric from Module 1 without requiring ambiguous joins, fan-out fixes, or full-table rescans.
 
+> **Convention Note: what is `ds`?**
+> In Hive-style warehouse layouts, `ds` is the daily datestamp partition key (`'YYYY-MM-DD'`). Query engines such as Presto/Trino and Spark use it for partition pruning, so metric queries should nearly always bound `ds`.
+
 ## Table of Contents
 
 1. [Fact Table Design](#1-fact-table-design)
@@ -105,6 +108,12 @@ Interview rule: never sum precomputed ratios. Store the numerator and denominato
 ## 2. Dimension Design
 
 ### 2.1 Conformed dimensions shared across multiple fact tables
+
+**Surrogate key vs natural key**
+
+- **Natural/business key:** source-system identifier, often string-like (for example, `user_uuid`).
+- **Surrogate key:** warehouse-generated integer key (for example, `user_key`).
+- **Why interviewers prefer surrogate keys in dimensions:** faster integer joins at scale and stable historical linkage when source keys mutate across systems.
 
 A **conformed dimension** means the same dimension can join consistently across multiple facts.
 
@@ -216,6 +225,14 @@ Example:
 
 Instead of storing these small flags repeatedly across large fact tables, bundle them into `dim_listing_flags`.
 
+Example `dim_listing_flags` (junk dimension):
+
+| flag_key (PK) | is_promoted_listing | is_trusted_seller | is_cross_border | is_mobile_web |
+|---|---|---|---|---|
+| 1 | true | true | false | false |
+| 2 | true | false | true | true |
+| 3 | false | false | false | false |
+
 #### Degenerate dimension
 
 A **degenerate dimension** is a business identifier stored directly in the fact table with no separate dimension row.
@@ -226,6 +243,13 @@ Examples:
 - `invoice_id`
 
 Use when the identifier is analytically useful, but there is no stable descriptive dimension worth splitting out.
+
+Example degenerate dimension in a fact table:
+
+| transaction_id (degenerate dim) | buyer_id (FK) | seller_id (FK) | amount_usd |
+|---|---|---|---:|
+| `tx_8830192` | 102 | 904 | 45.00 |
+| `tx_8830193` | 112 | 611 | 19.99 |
 
 ### 2.4 Role-playing dimensions
 
@@ -276,6 +300,17 @@ dim_date          dim_listing             dim_buyer              dim_seller
                   │ measures: item_price, shipping_fee, gmv_usd,       │
                   │           refund_usd, is_completed                 │
                   └────────────────────────────────────────────────────┘
+```
+
+```text
+┌───────────────────────────────────────────────────────────────────┐
+│                        ERD DIAGRAM LEGEND                         │
+├───────────────────────────────────────────────────────────────────┤
+│ PK : Primary Key (unique row identifier)                          │
+│ FK : Foreign Key (references a dimension primary key)             │
+│ 1:N : One-to-many relationship (1 dim row -> N fact rows)         │
+│  -> : Cardinality direction from parent to child                  │
+└───────────────────────────────────────────────────────────────────┘
 ```
 
 Recommended tables:
@@ -418,6 +453,12 @@ Optional fields are suitable for:
 #### Worked schema-evolution example: adding a new required field without breaking deployed clients
 
 Suppose `marketplace_checkout_started` must eventually require `shipping_country`, but many existing mobile clients do not send it yet.
+
+Why hard-required changes break in production:
+
+- mobile clients are version-fragmented and cannot all upgrade immediately
+- older app versions keep emitting payloads without newly required fields
+- strict downstream parsers/deserializers then reject those records, causing parse failures or DLQ growth
 
 Bad approach:
 - mark `shipping_country` required immediately

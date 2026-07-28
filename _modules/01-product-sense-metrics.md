@@ -87,6 +87,14 @@ This helps you distinguish **scale problems** from **efficiency problems**:
 - If DAU is flat but watch time is down, the issue is likely within-session behavior.
 - If watch seconds per play are flat but starts are down, the issue is discovery, ranking, or entry.
 
+DAU cohort math to state explicitly when prompted:
+
+`DAU(t) = New(t) + Retained(t) + Resurrected(t)`
+
+- **New:** first-ever active users on day `t`.
+- **Retained:** users active on day `t` and also active in the recent lookback window (often previous day).
+- **Resurrected:** users active on day `t` after a defined inactivity gap (for example, no activity for 30+ days).
+
 #### Worked example: Marketplace GMV
 
 ```text
@@ -196,6 +204,8 @@ Interpretation:
 - If reactions go up but comments collapse, the feature may be **cannibalizing richer engagement**.
 - If reactions go up and watch time rises slightly but retention drops, novelty may be masking a long-term quality problem.
 
+Cross-reference to Section 1.3: these experiment guardrails are the same guardrail family (for example crash rate, hide/not-interested rate, retention) and serve as rollout stop conditions even when the primary metric is up.
+
 **Launch readout template**
 
 | Metric type | Metric | Result interpretation |
@@ -221,6 +231,17 @@ How to address it:
 - Read the experiment over multiple windows: Day 1, Week 1, Week 4
 - Examine repeat behavior, not just first interaction
 - Prefer retention, repeat rate, or creator-side persistence as supporting evidence
+
+Concrete novelty-pattern example:
+
+| Week post-launch | Daily reaction rate per exposed user | Interpretation |
+|---|---:|---|
+| Week 1 | 14.2% | Curiosity spike |
+| Week 2 | 9.8% | Early decay |
+| Week 3 | 5.4% | Nearing steady state |
+| Week 4 | 5.1% | Stable baseline |
+
+Practical mitigation: run at least 14-21 days and read lift separately for established cohorts versus first-time exposed users.
 
 #### Network effects
 
@@ -261,6 +282,17 @@ Examples:
 - In Ads, a conversion after Feed impression → Reels reminder → Marketplace click can look very different under last-touch vs. multi-touch.
 - In Marketplace, giving all credit to the final seller-message event may understate the importance of discovery ranking or saved-item reminders.
 
+Attribution worked example:
+
+User path: Ad A impression (Day 1) -> Ad B click (Day 2) -> Ad C view (Day 3) -> $100 purchase (Day 3).
+
+| Model | Ad A | Ad B | Ad C | Revenue allocation |
+|---|---:|---:|---:|---|
+| First-touch | 100% | 0% | 0% | A = $100 |
+| Last-touch | 0% | 0% | 100% | C = $100 |
+| Linear | 33.3% | 33.3% | 33.3% | A/B/C = $33.33 each |
+| Position-based (40/20/40) | 40% | 20% | 40% | A = $40, B = $20, C = $40 |
+
 ## 3. Root Cause Analysis Playbook
 
 **Root-cause framework for a metric drop** — always split into two branches before guessing:
@@ -280,6 +312,11 @@ Technical/Data check       Product/Market check
 ```
 
 ### 3.1 Technical/data diagnostic checklist
+
+Interview distinction before you start:
+
+- **Metric drop prompt** (for example, "DAU fell 6%") -> diagnostic investigation: verify data health, segment, isolate root cause.
+- **Feature launch prompt** (for example, "evaluate new comments feature") -> framework design: define success metric, guardrails, experiment horizon, and attribution.
 
 Before inventing product explanations, verify the metric is real.
 

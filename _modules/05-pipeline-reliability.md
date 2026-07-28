@@ -60,6 +60,12 @@ Interview-quality takeaway:
 
 > In real pipelines, at-least-once delivery plus idempotent writes is often the practical way to approximate exactly-once behavior.
 
+Exactly-once caveat worth stating out loud:
+
+- Kafka transactions plus Spark Structured Streaming can provide end-to-end exactly-once behavior in specific designs.
+- It requires transactional/idempotent sinks, consistent checkpointing, and careful failure semantics.
+- It is not the default outcome of simply using Kafka or Spark.
+
 ### 1.2 Idempotency keys as the mechanism that makes at-least-once behave like exactly-once
 
 An **idempotency key** ensures that replaying the same event does not apply the business effect twice.
@@ -82,6 +88,11 @@ If a consumer crashes mid-batch:
 That is why idempotency is the **practical** answer, not just a conceptual one.
 
 ## 2. Backfill Strategies
+
+Hive-style storage paths explanation:
+
+- Paths like `s3://meta-raw-events/reel_view/ds=2026-07-20/` use Hive-style partitioning (`column=value`).
+- Engines such as Spark and Presto parse partition values from directory names and can prune files before reading data contents.
 
 ### 2.1 Staging + atomic swap
 
@@ -109,6 +120,8 @@ Why it works:
 - readers continue using the old partition while validation runs
 - the final publish step is atomic
 - failures never partially corrupt the production partition
+
+Atomic swap means readers see either the old partition snapshot or the new one after a single metadata switch, not a half-written intermediate state.
 
 ### 2.2 Partition-level vs. full-table backfill
 
@@ -153,6 +166,8 @@ Why it matters:
 - mobile events can arrive late due to offline buffering
 - network issues create out-of-order arrival
 - naive daily closes can undercount if you finalize too early
+
+Interview phrasing: watermarking is an event-time completeness boundary. Data later than the watermark is treated as too-late for that finalized window. See Module 9 section "Structured Streaming with watermarking" for implementation syntax.
 
 ### 3.2 Grace periods and reprocessing windows
 
@@ -269,6 +284,8 @@ Operationalization:
 
 #### Airflow DAG sketch with sensor, Spark, retries, exponential backoff, and Slack SLA alert
 
+Dependency note: `SparkSubmitOperator` requires the `apache-airflow-providers-apache-spark` provider package in the Airflow environment.
+
 ```python
 from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
@@ -357,7 +374,7 @@ What this operationalizes:
 - `ExternalTaskSensor` waits for upstream data
 - `PythonOperator` explicitly checks the expected `ds` partition exists
 - retries and exponential backoff handle transient failures
-- `sla_miss_callback` sends Slack when the critical path breaches the SLA window
+- `sla_miss_callback` sends Slack when a task misses its SLA deadline relative to the scheduled run time (not only when the task hard-fails)
 
 ## 6. Failure Modes
 

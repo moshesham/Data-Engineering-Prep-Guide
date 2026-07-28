@@ -1,5 +1,7 @@
 # Meta Data Engineer Interview — Unified Study Guide
 
+⚠️ **Executable Pseudocode Disclaimer:** Code snippets and SQL queries in this guide are production-grade interview solutions designed to demonstrate conceptual logic, performance optimization, and algorithmic correctness. Table names (for example, `fact_reel_impressions`) and client event schemas are representative interview mocks.
+
 ## How to Use This Guide
 
 The source material treats Product Sense, Data Modeling, SQL, and Python as separate modules. In the actual onsite, they are **not separate** — each of the three "Blended" rounds throws all four at you inside one 45-minute conversation, in this order:
@@ -10,6 +12,15 @@ Product framing  →  Event payload  →  Star schema  →  SQL query  →  (som
 ```
 
 The interviewer is grading whether your SQL and your schema are *consistent with the metric you defined two minutes earlier* — not whether each piece is correct in isolation. Most candidates lose points not on syntax but on drift: they define a metric in Module 1 language, then write a query in Module 3 that silently answers a different question. Treat Modules 1–4 below as one skill, not four.
+
+### Anatomy of a 45-Minute Blended Round
+
+Blended rounds are candidate-led: the interviewer gives a top-level product prompt and you drive the sequence below.
+
+1. **Product Sense (8–10 min):** clarify the goal, define North Star and L1/L2 metrics, name guardrails.
+2. **Event Logging + Data Modeling (10–12 min):** propose payload contracts, grain, and star schema decisions.
+3. **SQL Analytics (10–12 min):** write query logic for funnel, retention, or RCA segmentation.
+4. **Python Transformation / ETL (8–10 min):** implement parsing, aggregation, or sessionization logic clearly.
 
 **Loop structure:**
 
@@ -35,7 +46,16 @@ Onsite (4–5 rounds)
 | Idempotent backfill via staging + atomic swap | Iceberg snapshot/merge-on-read, Airflow-orchestrated backfills |
 | DAG-based orchestration | Airflow |
 
+> **Convention Note: what is `ds`?**
+> In Big Data ecosystems (Hive, Presto/Trino, Spark) and at Meta, `ds` is the daily datestamp partition key formatted as `'YYYY-MM-DD'`. It maps directly to partition folders and enables partition pruning, for example `WHERE ds = '2026-07-20'`.
+
 The gap for you is almost never the engineering concept — it's translating credit-risk/fraud framing into consumer-social-product framing (DAU/retention instead of default rates, Reels watch time instead of transaction volume). Practice that translation explicitly; it's the actual thing being tested.
+
+### Key Concepts Summary
+
+- **Schema Drift:** payload structure changes (added/removed/renamed fields) that can break ingestion and ETL assumptions.
+- **Feature / Concept Drift:** serving-time feature distributions shift away from training-time distributions and degrade model behavior.
+- **Metric Drift:** business logic for a metric changes over time (for example, redefining DAU), making time-series comparisons inconsistent unless versioned.
 
 ---
 
@@ -73,6 +93,8 @@ The gap for you is almost never the engineering concept — it's translating cre
 
 - [**Module 9: Apache Spark: ETL Development Reference**](_modules/09-spark-etl.md)
   Mental model + lazy execution · canonical ETL skeleton · full syntax inventory · configs reference · skew and join tuning · SCD merge and structured streaming · **small-file/compaction problem** · **Airflow-to-Spark DAG** · **pandas_udf vectorized example** · **Spark UI skew reading** · OOM diagnosis
+
+  *Note: Module 9 is a reference module. Spark syntax itself is less common in the initial rapid-fire screen (usually SQL + Python), but Spark architecture, shuffle behavior, skew handling, and memory tradeoffs are frequently tested in onsite infra/system-design discussions.*
 
 ---
 

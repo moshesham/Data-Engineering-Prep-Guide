@@ -32,6 +32,8 @@ permalink: /modules/spark-etl/
 
 DataFrame operations are **lazy** — nothing executes until an action (`.collect()`, `.count()`, `.write()`) forces Catalyst to plan and Tungsten to execute. Interviewers listen for whether you reason about the *physical plan*, not just the API call. Always be ready to say "I'd check `.explain(True)` here" when asked about performance.
 
+Common pitfall to call out: `.cache()` is only a storage hint until an action materializes the plan. For example, `.cache(); .count()` populates cache, while `.cache()` alone does not.
+
 Stick to the DataFrame/Dataset API. RDDs only come up if someone explicitly asks about internals (partitioning, lineage, `mapPartitions`).
 
 A good mental shortcut:
@@ -125,6 +127,8 @@ These come up both as "what would you tune" interview questions and as real prod
 
 **Interview answer pattern:** if asked "the job is slow, what do you check" — walk the list in this order: (1) `explain()` the physical plan, (2) look for data skew in the shuffle stage (Spark UI stage view, task duration variance), (3) check partition count vs. cluster parallelism, (4) check for an unintended shuffle-heavy join that should've been broadcast, (5) check serialization and caching. Naming the order matters more than naming every config.
 
+Memory-overhead nuance: `spark.executor.memoryOverhead` covers non-heap memory (Python worker process, Arrow/native buffers, serializer overhead). Errors that mention overhead limits usually require overhead tuning or lower per-executor concurrency, not only heap increases.
+
 ### 5. Handling Skew & Tuning Joins (existing)
 
 - **Salting** — append a random suffix (`0`–`N`) to a skewed join key on both sides, join on `(key, salt)`, then aggregate away the salt. Standard fix when AQE skew-join handling isn't enough (e.g., pre-3.x clusters, or skew inside a single AQE partition).
@@ -143,6 +147,8 @@ A practical interview heuristic:
 #### 6.1 Idempotent upsert / merge (existing)
 
 **Idempotent upsert / merge (Iceberg or Delta syntax)** — this is the production version of the Module 5 backfill pattern:
+
+If your stack is Iceberg-first, express the same Type-2 logic with `MERGE INTO` SQL against Iceberg tables (or equivalent catalog-supported merge API) rather than Delta-specific helpers.
 
 ```python
 from delta.tables import DeltaTable
@@ -360,6 +366,7 @@ with DAG(
             "spark.sql.shuffle.partitions": "400",
             "spark.dynamicAllocation.enabled": "true",
         },
+        deploy_mode="cluster",
         executor_cores=4,
         executor_memory="8g",
         num_executors=20,
@@ -380,6 +387,8 @@ What to say in an interview:
 - the sensor enforces **data dependency correctness**
 - SparkSubmitOperator executes the actual ETL job
 - the final quality check closes the loop so success means **usable data**, not just a finished compute task
+
+Deploy-mode caveat: cluster mode keeps the Spark driver on the Spark cluster. In client mode, the driver runs with the Airflow worker process and can fail due to worker memory/timeouts.
 
 #### 6.6 `pandas_udf` — vectorized UDF alternative (new)
 
@@ -439,6 +448,11 @@ scored = events_df.withColumn(
     ),
 )
 ```
+
+Decorator annotation:
+
+- `T.DoubleType()` declares the Spark return type.
+- Omitting an explicit function type here uses scalar vectorized semantics in modern PySpark (`pandas.Series -> pandas.Series` batch transformation).
 
 Why the vectorized version is faster:
 
@@ -516,3 +530,5 @@ Fast interview-safe debugging order:
 ### 8. How This Shows Up in the Loop
 
 If a "blended" round asks you to implement the SQL query from Module 3 in Spark, the fastest credible path is: mirror the CTEs as chained DataFrame transformations 1:1 (pre-aggregate → window → filter), narrate the partition/shuffle implications as you go, and mention `dropDuplicates` on `event_id` before any aggregation — the same idempotency point graders look for in the SQL round.
+
+Practice transfer: redo the same Spark pattern on `fact_marketplace_transactions` and `fact_messenger_messages` so the interviewer sees you can move beyond Reels-specific naming.

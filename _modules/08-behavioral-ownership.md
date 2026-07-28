@@ -49,6 +49,8 @@ A good time split for a 75-second answer:
 
 Why this matters: interviewers are trying to determine whether you personally drove the technical work or merely observed it. "We migrated the pipeline" is weak. "I traced the skew to a weekend backfill join, rewrote the aggregation grain, and added row-count assertions" is strong.
 
+Calibration method: record yourself with a timer. Most candidates initially over-index on Situation and under-deliver Action; rehearse until Action consistently carries the technical depth.
+
 Good Action content includes:
 
 - What you diagnosed
@@ -104,6 +106,8 @@ Why this works:
 
 #### 2.2 Conflict / disagreement with a peer or stakeholder
 
+Conflict framing note: interviewers usually want professional or technical disagreement (tradeoffs, priorities, risk), not personality conflict.
+
 **Archetype — disagreement with a data scientist over feature engineering approach that affected model accuracy**
 
 - **Situation:** A data scientist wanted to train a Reel-share prediction model using the latest user profile snapshot and a 7-day engagement aggregate built from a convenient analytics table. I was responsible for the training-set pipeline. When I reviewed the proposed data, I realized the snapshot table was updated in place nightly and the engagement aggregate used day-level averages rather than event-time windows. That would likely leak future information and create training-serving skew.
@@ -128,6 +132,11 @@ What makes this a strong conflict story:
 - **Result:** The corrected numbers were republished the same day, executive stakeholders received a clear explanation and recovery timeline, and no repeat incident occurred over the next two quarters. More importantly, the process changed: future schema changes triggered an automated contract check plus a human review for revenue-critical tables.
 
 The key interview move here is not pretending the mistake never happened. The value is in showing disciplined recovery and a durable process improvement.
+
+Strong "what changed" examples:
+
+- "I added automated row-count and join-uniqueness assertions to every revenue-critical pipeline before publish."
+- "I introduced a mandatory downstream impact review for upstream schema changes instead of relying on ad hoc communication."
 
 #### 2.4 Ambiguity — a project with no clear direction at the start
 
@@ -163,6 +172,16 @@ Notice the pattern:
 ### 3. Meta Values Mapping
 
 Meta's stated values to map stories to: **Focus on Impact**, **Move Fast** (iterate without letting technical debt go unmanaged), **Be Bold / Ownership** (accountability for accuracy and cross-functional outcomes).
+
+Quick archetype-to-value map:
+
+| Story archetype | Primary value signaled |
+|---|---|
+| Technical ownership | Be Bold / Ownership |
+| Conflict / disagreement | Focus on Impact |
+| Failure or mistake | Be Bold / Ownership |
+| Ambiguity | Move Fast |
+| Cross-functional influence | Focus on Impact |
 
 #### 3.1 Focus on Impact
 
@@ -277,7 +296,7 @@ Use this scaffold to build your own bank. The goal is not polished prose at firs
 - **Task:** > 🚧 **Placeholder:** What exactly were you responsible for fixing or delivering?
 - **Action:** > 🚧 **Placeholder:** What did you diagnose, redesign, automate, or coordinate personally?
 - **Result:** > 🚧 **Placeholder:** What changed in runtime, cost, data quality, reliability, or stakeholder trust?
-- **Prompting questions:** Did this happen at JPMorgan, Citi, BrightSource, or IMF? Was there a painful Monday-morning report, broken reconciliation, or recurring manual workflow you eliminated?
+- **Prompting questions:** Did this happen at [Employer A], [Employer B], [Employer C], or [Employer D]? Was there a painful Monday-morning report, broken reconciliation, or recurring manual workflow you eliminated?
 
 #### Conflict / disagreement
 

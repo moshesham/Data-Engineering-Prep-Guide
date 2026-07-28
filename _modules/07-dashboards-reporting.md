@@ -172,9 +172,13 @@ Cons:
 
 Interview answer: choose **Option A** if analysis flexibility matters, **Option B** if the dashboard is stable and latency-sensitive. Many production systems keep both: a user-grain fact table plus a smaller aggregate serving table.
 
+Default recommendation for interview framing: start with Option B (aggregate serving table) for dashboard performance, then explicitly offer Option A when stakeholder requirements include user-level drill-down.
+
 #### 3.2 The SQL that populates it (link to Module 3)
 
 This is structurally the same as a SQL funnel question from Module 3: identify the earliest timestamp for each step, preserve the step order, then aggregate.
+
+Cross-module mapping note: the final output columns here (`step_name`, `step_order`, counts, and step conversion rates) align directly with the funnel result shape from Module 3 section "Funnel conversion query".
 
 Example user-grain build:
 
@@ -286,6 +290,7 @@ How the named cells are defined:
 - **D1** = users active 1 day after cohort start / users in cohort
 - **D7** = users active 7 days after cohort start / users in cohort
 - **D30** = users active 30 days after cohort start / users in cohort
+- In table form, this is `day_offset = 1`, `7`, and `30` respectively (with `day_offset = 0` as cohort-day baseline).
 
 The heatmap UI typically pivots `day_offset` across columns, but the backing table should stay normalized.
 
@@ -359,6 +364,8 @@ These are easy to explain and stable when the metric has strong seasonality cont
 The more adaptive rule from the prompt is statistical:
 
 > Flag any cell where `retention_rate < trailing_4_week_avg_retention - 2 * stddev`.
+
+Quick intuition: a z-score tells you how many standard deviations a point is from the rolling mean. Around `|z| >= 2` is a practical first alert boundary for unusual movement.
 
 Worked SQL example for D30 retention:
 

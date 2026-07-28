@@ -34,11 +34,18 @@ Client events → Kafka/Flink → Feature store → ML inference
               (offline training set)
 ```
 
+Architecture clarification: the feature store is a low-latency serving layer and consistency contract on top of upstream data systems; it is not a replacement for the batch data lake that supports replay/backfill/training construction.
+
 ### 1. Feature Store Architecture
 
 A strong interview answer makes one distinction immediately: the data engineer is responsible for the **data contracts, correctness guarantees, storage design, and serving path consistency** around features. You do not need to train the ranking model, but you do need to make sure the model sees the same definition of a feature in offline training and online inference.
 
 #### 1.1 Online vs. offline store consistency
+
+Latency expectation to state clearly:
+
+- online feature reads are usually single-digit to low-double-digit milliseconds (for example, `<10ms` to `~20ms` service-side)
+- offline analytical/training reads can take seconds to minutes depending on scan size
 
 The online store exists for low-latency lookups during inference. The offline store exists for backfills, exploratory analysis, and training-set construction. They often serve different workloads, but they should represent the **same logical feature definition**.
 
@@ -207,6 +214,8 @@ Example storage shape:
 
 At scale, you do not brute-force compare every vector against every other vector at request time. ANN systems trade a little exactness for a large latency win.
 
+Why approximation is acceptable in interviews and production: exact nearest-neighbor search over very large, high-dimensional corpora is often computationally infeasible at serving latency targets. ANN accepts a small recall tradeoff for orders-of-magnitude faster retrieval.
+
 The interview-safe explanation is:
 
 - Exact nearest-neighbor search becomes too slow when the corpus is large and the vectors are high-dimensional.
@@ -315,6 +324,8 @@ If this query starts returning many rows, you likely have skew, a backfill bug, 
 Feature drift is a production data-quality problem first and a model-quality problem second. The DE owns the monitoring surface that tells the ML team when the serving distribution no longer looks like the training distribution.
 
 #### 4.1 Distribution-shift detection
+
+Definition: distribution shift means the statistical profile of serving-time feature values no longer matches what the model was trained on, so learned relationships degrade even when infrastructure is healthy.
 
 Useful drift checks:
 

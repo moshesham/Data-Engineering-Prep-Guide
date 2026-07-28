@@ -8,6 +8,16 @@ permalink: /modules/sql/
 
 **Core job:** write analytically complete queries that do not fan out, silently drop `NULL`s, or full-scan history unnecessarily.
 
+### SQL engine compatibility key
+
+Primary dialect in this guide is **ANSI SQL / Presto (Trino)-style analytics SQL**.
+
+| Topic | Snowflake / BigQuery | Presto/Trino / Spark SQL | PostgreSQL-style note |
+|---|---|---|---|
+| `QUALIFY` on window results | native support | use CTE/subquery + outer `WHERE` in Presto/Trino | usually CTE/subquery + outer `WHERE` |
+| Date subtraction | `DATEADD`/engine function variants | `date_add`/interval expressions (engine-specific) | `'2026-07-20'::date - INTERVAL '2 days'` |
+| Window frames | full support | full support; always specify frame explicitly | full support |
+
 ## Table of Contents
 
 1. [Core Semantics](#1-core-semantics)
@@ -45,7 +55,7 @@ permalink: /modules/sql/
 Rule of thumb:
 - use `WHERE` to shrink the scan early
 - use `HAVING` for aggregate conditions
-- use `QUALIFY` when your warehouse supports it and you need to filter on window results
+- use `QUALIFY` when your warehouse supports it; otherwise compute window columns in a CTE/subquery and filter in outer `WHERE`
 
 ### 1.2 NULL handling and three-valued logic
 
@@ -60,6 +70,33 @@ Defensive habits:
 - use `COALESCE(country, 'UNKNOWN')`
 - use `NULLIF(denominator, 0)` for division safety
 - prefer `NOT EXISTS` over `NOT IN` for anti-joins
+
+`NOT IN` trap demonstration:
+
+```sql
+-- blocklist contains (101, 102, NULL)
+SELECT user_id
+FROM users
+WHERE user_id NOT IN (SELECT user_id FROM blocklist);
+
+-- Returns 0 rows because NULL in the subquery makes the predicate UNKNOWN.
+
+-- Safe pattern 1: NOT EXISTS
+SELECT u.user_id
+FROM users u
+WHERE NOT EXISTS (
+        SELECT 1
+        FROM blocklist b
+        WHERE b.user_id = u.user_id
+);
+
+-- Safe pattern 2: LEFT JOIN anti-join
+SELECT u.user_id
+FROM users u
+LEFT JOIN blocklist b
+    ON u.user_id = b.user_id
+WHERE b.user_id IS NULL;
+```
 
 ### 1.3 UNION/UNION ALL/INTERSECT/EXCEPT
 
@@ -213,6 +250,16 @@ Why it matters:
 
 In interview SQL, prefer `ROWS` unless you intentionally want peer grouping behavior.
 
+Tie example (same ordering value):
+
+- Rows: `(ds='2026-07-20', val=10)`, `(ds='2026-07-20', val=20)`
+- `ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW`:
+    - row 1 running sum = `10`
+    - row 2 running sum = `30`
+- `RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW`:
+    - row 1 running sum = `30`
+    - row 2 running sum = `30` (both rows are peers on `ds`)
+
 ## 4. Advanced Query Patterns
 
 ### 4.1 Funnel conversion query
@@ -227,6 +274,14 @@ Assumptions:
 - `event_type` values are `reel_impression`, `reel_watch_3s`, `reel_like`, `reel_share`
 - a user must complete steps in order
 - query window is bounded by `ds`
+
+Conditional aggregation idiom to know by memory:
+
+```sql
+COUNT(DISTINCT CASE WHEN event_type = 'reel_impression' THEN user_id END)
+```
+
+Why it works: `CASE` yields `NULL` for non-matching rows, and `COUNT(DISTINCT ...)` ignores `NULL`, so you count unique users only for the matching step in one scan.
 
 ```sql
 WITH impression_users AS (
@@ -332,6 +387,10 @@ What this query shows:
 - step-to-step conversion
 - overall conversion from impression baseline
 
+Practice transfer prompts:
+- Rewrite this pattern for `fact_marketplace_transactions` as `listing_view -> message_seller -> checkout_started -> transaction_completed`.
+- Rewrite this pattern for `fact_messenger_messages` as `conversation_open -> message_sent -> reply_received`.
+
 ### 4.2 Retention / cohort query
 
 Prompt: Given `fact_user_events(user_id, event_type, event_timestamp, ds)`, compute a signup cohort retention matrix:
@@ -342,6 +401,20 @@ Assumptions:
 - `event_type = 'signup'` marks signup
 - any later event counts as a return event
 - a user belongs to the date of their first signup
+
+Join-flow walkthrough:
+
+```text
+first_signup (cohort spine per user)
+    |
+    | LEFT JOIN by user_id + exact day offsets (D1/D7/D30)
+    v
+d1_retained / d7_retained / d30_retained
+    |
+    | LEFT JOIN onto cohort_sizes by signup_date
+    v
+final retention percentages by cohort_date
+```
 
 ```sql
 WITH signup_ranked AS (
@@ -468,6 +541,7 @@ session_numbered AS (
         event_type,
         event_timestamp,
         ds,
+        -- running count of session starts becomes a stable per-user session number
         SUM(is_new_session) OVER (
            PARTITION BY user_id
            ORDER BY event_timestamp

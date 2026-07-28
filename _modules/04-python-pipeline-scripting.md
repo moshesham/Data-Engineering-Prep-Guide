@@ -152,6 +152,11 @@ Key interview note:
 - `heapq.nlargest()` is perfectly fine if all totals are already materialized
 - the fixed-size min-heap is more scalable and demonstrates better streaming intuition
 
+Tradeoff phrasing interviewers expect:
+
+- `heapq.nlargest(k, iterable)` is concise when the dataset is already in memory.
+- A manual fixed-size min-heap is the streaming-safe pattern: `O(N log K)` time with `O(K)` heap space, even when `N` is much larger than RAM.
+
 ## 2. String & Log Parsing
 
 ### 2.1 Regex-based extraction from raw log lines
@@ -184,6 +189,10 @@ One line is malformed and missing a field.
 ```python
 import re
 
+# (?P<timestamp>...): captures YYYY-MM-DD HH:MM:SS
+# (?P<user_id>\d+): captures numeric user ID
+# (?P<event>[a-zA-Z_]+): captures event token like reel_view
+# (?P<watch_ms>\d+): captures watch duration in ms
 LOG_PATTERN = re.compile(
     r"^(?P<timestamp>\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2})\s+"
     r"user_id=(?P<user_id>\d+)\s+"
@@ -293,6 +302,21 @@ Prompt: Given session intervals `(start_time, end_time)`, find the maximum numbe
 
 This is **not** the same as merging for total active time. Use a sweep line.
 
+Mini execution trace (why sweep line works):
+
+Example intervals: `(1,5)`, `(2,6)`, `(4,8)`
+
+1. Convert to events: `(1,+1)`, `(5,-1)`, `(2,+1)`, `(6,-1)`, `(4,+1)`, `(8,-1)`.
+2. Sort by `(time, delta)` so `-1` is processed before `+1` at ties.
+3. Scan with running counter:
+    - `t=1`: current `0 -> 1`
+    - `t=2`: current `1 -> 2`
+    - `t=4`: current `2 -> 3` (max)
+    - `t=5`: current `3 -> 2`
+    - `t=6`: current `2 -> 1`
+    - `t=8`: current `1 -> 0`
+4. Peak running counter is the answer.
+
 ```python
 def max_concurrent_sessions(intervals: list[tuple[int, int]]) -> int:
     """
@@ -386,6 +410,30 @@ def min_subarray_len(target: int, nums: list[int]) -> int:
 
 Time: `O(n)`  
 Space: `O(1)`
+
+Second worked pattern (expand right, shrink left): longest subarray with average >= threshold.
+
+```python
+def longest_subarray_avg_at_least(nums: list[int], threshold: float) -> int:
+    """
+    Interview-oriented variant: maintain a window and shrink when average drops below threshold.
+    Note: this pattern is easiest when values are non-negative.
+    """
+    left = 0
+    window_sum = 0
+    best = 0
+
+    for right, value in enumerate(nums):
+        window_sum += value
+
+        while left <= right and (window_sum / (right - left + 1)) < threshold:
+            window_sum -= nums[left]
+            left += 1
+
+        best = max(best, right - left + 1)
+
+    return best
+```
 
 ## 5. Complexity Communication
 
