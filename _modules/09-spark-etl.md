@@ -1,8 +1,10 @@
 ---
 layout: default
-title: Module 9 — Apache Spark: ETL Development Reference
+title: Module 9 — Apache Spark ETL Development Reference
 permalink: /modules/spark-etl/
 ---
+
+
 
 ## Module 9 — Apache Spark: ETL Development Reference
 
