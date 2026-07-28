@@ -6,7 +6,7 @@ permalink: /modules/spark-etl/
 
 
 
-## Module 9 — Apache Spark: ETL Development Reference
+## Module 9 — Apache Spark ETL Development Reference
 
 ## Table of Contents
 1. [Mental Model First](#1-mental-model-first-existing)
