@@ -1,0 +1,35 @@
+# Jekyll configuration for Data Engineering Interview Prep Guide
+
+title: Meta Data Engineer Interview — Unified Study Guide
+description: Comprehensive study guide for Meta data engineer interviews
+url: "https://moshesham.github.io"
+baseurl: "/Data-Engineering-Prep-Guide"
+
+# Build settings
+markdown: kramdown
+theme: jekyll-theme-minimal
+
+# Include files for navigation
+include:
+  - _pages
+
+# Collection configuration for modules
+collections:
+  modules:
+    output: true
+    permalink: /modules/:name
+
+# Permalink structure
+permalink: /:title/
+
+# Exclude files from Jekyll build
+exclude:
+  - .git
+  - .gitignore
+  - .github
+  - vendor
+  - Gemfile
+  - Gemfile.lock
+
+# Enable GitHub Pages configuration
+github: [metadata]
