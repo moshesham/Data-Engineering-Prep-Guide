@@ -1,0 +1,253 @@
+---
+layout: default
+title: Home
+permalink: /
+---
+
+<!-- ── Hero ─────────────────────────────────────────────────────── -->
+<div class="hero">
+  <h1>Meta Data Engineer<br>Interview Prep Guide</h1>
+  <p class="subtitle">
+    Nine tightly integrated study modules covering Product Sense, SQL, Python,
+    Data Modeling, Pipeline Reliability, AI/ML, Dashboards, Behavioral, and Spark ETL —
+    designed around how Meta's actual onsite rounds are structured.
+  </p>
+  <div class="hero-actions">
+    <a href="{{ '/study-plan/' | relative_url }}" class="btn btn-primary">📅 4-Week Study Plan</a>
+    <a href="{{ '/recall-sheet/' | relative_url }}" class="btn btn-secondary">📋 Recall Sheet</a>
+  </div>
+</div>
+
+<!-- ── How to Use ──────────────────────────────────────────────── -->
+<section class="module-section">
+  <h2>How to Use This Guide</h2>
+  <p>
+    The actual onsite throws Product Sense, Data Modeling, SQL, and Python at you
+    inside <em>one</em> 45-minute conversation — not as four separate topics.
+    Treat Modules 1–4 as a single integrated skill.
+  </p>
+  <pre class="dep-map">
+Product framing  →  Event payload  →  Star schema  →  SQL query  →  Python transform
+   (2–3 min)          (5 min)          (8–10 min)      (15 min)          (10 min)
+
+Interview loop
+  ├─ Recruiter Screen  (30 min) — Project overview
+  ├─ Technical Screen  (60 min) — 5 SQL + 5 Python speed round
+  └─ Onsite  (4–5 rounds)
+       ├─ 3× Blended: Product Sense → Data Model → SQL → Python
+       └─ 1× Behavioral &amp; Ownership (STAR)</pre>
+</section>
+
+<!-- ── Core Modules ────────────────────────────────────────────── -->
+<section class="module-section">
+  <h2>Core Modules — Foundation</h2>
+  <div class="module-grid">
+
+    <a href="{{ '/modules/product-sense-metrics/' | relative_url }}" class="module-card">
+      <div class="card-header">
+        <span class="card-num">01</span>
+        <span class="card-title">Product Sense &amp; Metrics</span>
+      </div>
+      <p class="card-desc">
+        North Star metrics by surface · L1/L2 metric-tree decomposition ·
+        guardrail catalog · A/B testing design · RCA playbook with worked scenarios
+      </p>
+    </a>
+
+    <a href="{{ '/modules/data-modeling-schema/' | relative_url }}" class="module-card">
+      <div class="card-header">
+        <span class="card-num">02</span>
+        <span class="card-title">Data Modeling &amp; Schema Design</span>
+      </div>
+      <p class="card-desc">
+        Fact table types · SCD Types 1–6 · star/snowflake/OBT tradeoffs ·
+        full schemas for Reels, Marketplace, Messenger · schema evolution
+      </p>
+    </a>
+
+    <a href="{{ '/modules/sql/' | relative_url }}" class="module-card">
+      <div class="card-header">
+        <span class="card-num">03</span>
+        <span class="card-title">SQL</span>
+      </div>
+      <p class="card-desc">
+        Window functions with frame semantics · funnel &amp; retention queries ·
+        sessionization · NULL three-valued logic · join fan-out · partition pruning
+      </p>
+    </a>
+
+    <a href="{{ '/modules/python-pipeline/' | relative_url }}" class="module-card">
+      <div class="card-header">
+        <span class="card-num">04</span>
+        <span class="card-title">Python &amp; Pipeline Scripting</span>
+      </div>
+      <p class="card-desc">
+        Dict/set/heap patterns · top-K heap · mutual-connections intersection ·
+        log parsing · merge intervals · sweep-line · Big-O communication
+      </p>
+    </a>
+
+  </div>
+</section>
+
+<!-- ── Advanced Modules ────────────────────────────────────────── -->
+<section class="module-section">
+  <h2>Advanced Modules</h2>
+  <div class="module-grid">
+
+    <a href="{{ '/modules/pipeline-reliability/' | relative_url }}" class="module-card">
+      <div class="card-header">
+        <span class="card-num">05</span>
+        <span class="card-title">Pipeline Reliability, Batch &amp; Streaming</span>
+      </div>
+      <p class="card-desc">
+        Delivery semantics · idempotency keys · staging + atomic swap backfill ·
+        late-arriving data / watermarking · full Airflow DAG · lineage monitoring
+      </p>
+    </a>
+
+    <a href="{{ '/modules/aiml-infrastructure/' | relative_url }}" class="module-card">
+      <div class="card-header">
+        <span class="card-num">06</span>
+        <span class="card-title">AI/ML Infrastructure</span>
+      </div>
+      <p class="card-desc">
+        Feature store online/offline consistency · point-in-time-correct training sets ·
+        embeddings &amp; ANN search · training-serving skew · feature drift detection
+      </p>
+    </a>
+
+    <a href="{{ '/modules/dashboards-reporting/' | relative_url }}" class="module-card">
+      <div class="card-header">
+        <span class="card-num">07</span>
+        <span class="card-title">Dashboards &amp; Reporting</span>
+      </div>
+      <p class="card-desc">
+        Dashboard layer hierarchy · funnel &amp; cohort retention backing tables ·
+        chart selection guide · automated anomaly-detection alert logic
+      </p>
+    </a>
+
+    <a href="{{ '/modules/behavioral-ownership/' | relative_url }}" class="module-card">
+      <div class="card-header">
+        <span class="card-num">08</span>
+        <span class="card-title">Behavioral &amp; Ownership</span>
+      </div>
+      <p class="card-desc">
+        STAR mechanics &amp; timing · 5 story archetypes · Meta values mapping ·
+        personal story bank template · drill-down question handling
+      </p>
+    </a>
+
+  </div>
+</section>
+
+<!-- ── Reference Modules ───────────────────────────────────────── -->
+<section class="module-section">
+  <h2>Reference Module</h2>
+  <div class="module-grid">
+
+    <a href="{{ '/modules/spark-etl/' | relative_url }}" class="module-card">
+      <div class="card-header">
+        <span class="card-num">09</span>
+        <span class="card-title">Apache Spark: ETL Development Reference</span>
+      </div>
+      <p class="card-desc">
+        Lazy execution mental model · canonical ETL skeleton · full syntax inventory ·
+        skew &amp; join tuning · SCD merge · structured streaming · OOM diagnosis
+      </p>
+    </a>
+
+  </div>
+</section>
+
+<!-- ── Quick Navigation ────────────────────────────────────────── -->
+<section class="quick-nav-section">
+  <h2>Quick Navigation by Interview Stage</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Interview Stage</th>
+        <th>Primary Modules</th>
+        <th>What to Practice</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="stage-tag">Recruiter Screen</span> (30 min)</td>
+        <td>—</td>
+        <td>Project overview, data system experience</td>
+      </tr>
+      <tr>
+        <td><span class="stage-tag">Technical Screen</span> (60 min)</td>
+        <td>
+          <a href="{{ '/modules/sql/' | relative_url }}">3</a>,
+          <a href="{{ '/modules/python-pipeline/' | relative_url }}">4</a>
+        </td>
+        <td>Timed SQL &amp; Python speed rounds</td>
+      </tr>
+      <tr>
+        <td><span class="stage-tag">Onsite Blended</span> (3 rounds)</td>
+        <td>
+          <a href="{{ '/modules/product-sense-metrics/' | relative_url }}">1</a> →
+          <a href="{{ '/modules/data-modeling-schema/' | relative_url }}">2</a> →
+          <a href="{{ '/modules/sql/' | relative_url }}">3</a> →
+          <a href="{{ '/modules/python-pipeline/' | relative_url }}">4</a>
+        </td>
+        <td>Full loop: Metric → Schema → SQL → Python</td>
+      </tr>
+      <tr>
+        <td><span class="stage-tag">Onsite Pipeline/Infra</span></td>
+        <td>
+          <a href="{{ '/modules/pipeline-reliability/' | relative_url }}">5</a>,
+          <a href="{{ '/modules/spark-etl/' | relative_url }}">9</a>
+        </td>
+        <td>Reliability, backfill, Spark optimization</td>
+      </tr>
+      <tr>
+        <td><span class="stage-tag">Onsite ML Infra</span></td>
+        <td>
+          <a href="{{ '/modules/aiml-infrastructure/' | relative_url }}">6</a>,
+          <a href="{{ '/modules/dashboards-reporting/' | relative_url }}">7</a>
+        </td>
+        <td>Feature stores, dashboards, anomaly detection</td>
+      </tr>
+      <tr>
+        <td><span class="stage-tag">Behavioral</span> (1 round)</td>
+        <td>
+          <a href="{{ '/modules/behavioral-ownership/' | relative_url }}">8</a>
+        </td>
+        <td>STAR stories mapped to Meta values</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ── Module Dependency Map ───────────────────────────────────── -->
+<section class="module-section">
+  <h2>Module Dependency Map</h2>
+  <pre class="dep-map">
+Module 1 (Metric)
+    │  defines what to measure
+    ▼
+Module 2 (Schema)
+    │  defines the tables the query runs against
+    ▼
+Module 3 (SQL) ←───── Module 7 (Dashboards — backed by Module 3 queries)
+    │  logic implemented in Spark
+    ▼
+Module 4 (Python) + Module 9 (Spark)
+    │  reliability built on top
+    ▼
+Module 5 (Pipeline Reliability)
+    │  supports ML infra
+    ▼
+Module 6 (AI/ML Infrastructure)
+
+Module 8 (Behavioral) — parallel to all technical rounds</pre>
+  <p>
+    Each module stands alone but builds toward the integrated loop:
+    <strong>metric definition → event payload → schema → SQL → Spark → reliability → ML serving</strong>.
+    Master the translation from one module's language to the next.
+  </p>
+</section>

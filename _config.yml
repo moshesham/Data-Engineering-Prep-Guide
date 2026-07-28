@@ -7,7 +7,6 @@ baseurl: "/Data-Engineering-Prep-Guide"
 
 # Build settings
 markdown: kramdown
-theme: jekyll-theme-minimal
 
 # Include files for navigation
 include:
