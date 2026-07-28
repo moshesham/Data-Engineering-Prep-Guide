@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% if page.title %}{{ page.title }} | {% endif %}{{ site.title }}</title>
+  <meta name="description" content="{{ page.description | default: site.description }}">
+  <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}">
+</head>
+<body>
+
+  <!-- ── TOP HEADER ─────────────────────────────────────────────── -->
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="header-brand">
+        <button class="sidebar-toggle" id="sidebar-toggle" aria-label="Toggle navigation">
+          <span></span><span></span><span></span>
+        </button>
+        <a href="{{ '/' | relative_url }}" class="site-title">
+          <span class="title-icon">🎯</span>
+          <span class="title-text">Meta DE Prep</span>
+        </a>
+      </div>
+
+      <nav class="top-nav" aria-label="Main navigation">
+        <a href="{{ '/' | relative_url }}" class="nav-link">Home</a>
+        <a href="{{ '/study-plan/' | relative_url }}" class="nav-link">Study Plan</a>
+        <a href="{{ '/recall-sheet/' | relative_url }}" class="nav-link">Recall Sheet</a>
+        <a href="https://github.com/moshesham/Data-Engineering-Prep-Guide"
+           class="nav-link nav-external" target="_blank" rel="noopener noreferrer">
+          GitHub&nbsp;↗
+        </a>
+      </nav>
+
+      <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode" title="Toggle dark mode">
+        🌙
+      </button>
+    </div>
+  </header>
+
+  <!-- ── BODY WRAPPER: sidebar + content ──────────────────────── -->
+  <div class="page-wrapper">
+
+    <!-- ── SIDEBAR ──────────────────────────────────────────────── -->
+    <aside class="sidebar" id="sidebar" aria-label="Module navigation">
+      <div class="sidebar-inner">
+
+        <div class="sidebar-section">
+          <div class="sidebar-heading">Core Modules</div>
+          <ul class="sidebar-nav">
+            <li>
+              <a href="{{ '/modules/product-sense-metrics/' | relative_url }}"
+                 class="sidebar-link{% if page.url contains 'product-sense' %} active{% endif %}">
+                <span class="mod-badge">01</span>
+                <span>Product Sense &amp; Metrics</span>
+              </a>
+            </li>
+            <li>
+              <a href="{{ '/modules/data-modeling-schema/' | relative_url }}"
+                 class="sidebar-link{% if page.url contains 'data-modeling' %} active{% endif %}">
+                <span class="mod-badge">02</span>
+                <span>Data Modeling</span>
+              </a>
+            </li>
+            <li>
+              <a href="{{ '/modules/sql/' | relative_url }}"
+                 class="sidebar-link{% if page.url == '/modules/sql/' %} active{% endif %}">
+                <span class="mod-badge">03</span>
+                <span>SQL</span>
+              </a>
+            </li>
+            <li>
+              <a href="{{ '/modules/python-pipeline/' | relative_url }}"
+                 class="sidebar-link{% if page.url contains 'python' %} active{% endif %}">
+                <span class="mod-badge">04</span>
+                <span>Python &amp; Pipelines</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <div class="sidebar-section">
+          <div class="sidebar-heading">Advanced Modules</div>
+          <ul class="sidebar-nav">
+            <li>
+              <a href="{{ '/modules/pipeline-reliability/' | relative_url }}"
+                 class="sidebar-link{% if page.url contains 'pipeline-reliability' %} active{% endif %}">
+                <span class="mod-badge">05</span>
+                <span>Pipeline Reliability</span>
+              </a>
+            </li>
+            <li>
+              <a href="{{ '/modules/aiml-infrastructure/' | relative_url }}"
+                 class="sidebar-link{% if page.url contains 'aiml' %} active{% endif %}">
+                <span class="mod-badge">06</span>
+                <span>AI/ML Infrastructure</span>
+              </a>
+            </li>
+            <li>
+              <a href="{{ '/modules/dashboards-reporting/' | relative_url }}"
+                 class="sidebar-link{% if page.url contains 'dashboards' %} active{% endif %}">
+                <span class="mod-badge">07</span>
+                <span>Dashboards &amp; Reporting</span>
+              </a>
+            </li>
+            <li>
+              <a href="{{ '/modules/behavioral-ownership/' | relative_url }}"
+                 class="sidebar-link{% if page.url contains 'behavioral' %} active{% endif %}">
+                <span class="mod-badge">08</span>
+                <span>Behavioral &amp; Ownership</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <div class="sidebar-section">
+          <div class="sidebar-heading">Reference</div>
+          <ul class="sidebar-nav">
+            <li>
+              <a href="{{ '/modules/spark-etl/' | relative_url }}"
+                 class="sidebar-link{% if page.url contains 'spark' %} active{% endif %}">
+                <span class="mod-badge">09</span>
+                <span>Apache Spark ETL</span>
+              </a>
+            </li>
+            <li>
+              <a href="{{ '/study-plan/' | relative_url }}"
+                 class="sidebar-link{% if page.url contains 'study-plan' %} active{% endif %}">
+                <span class="mod-icon">📅</span>
+                <span>4-Week Study Plan</span>
+              </a>
+            </li>
+            <li>
+              <a href="{{ '/recall-sheet/' | relative_url }}"
+                 class="sidebar-link{% if page.url contains 'recall-sheet' %} active{% endif %}">
+                <span class="mod-icon">📋</span>
+                <span>Recall Sheet</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+
+      </div>
+    </aside><!-- /sidebar -->
+
+    <!-- ── MAIN CONTENT ────────────────────────────────────────── -->
+    <main class="main-content" id="main-content">
+      <article class="content-body">
+        {{ content }}
+      </article>
+    </main>
+
+  </div><!-- /page-wrapper -->
+
+  <!-- ── FOOTER ──────────────────────────────────────────────────── -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <span>Meta Data Engineer Interview Prep Guide</span>
+      <span class="sep">·</span>
+      <a href="https://github.com/moshesham/Data-Engineering-Prep-Guide"
+         target="_blank" rel="noopener noreferrer">View on GitHub</a>
+      <span class="sep">·</span>
+      <span>Last updated: July 2026</span>
+    </div>
+  </footer>
+
+  <!-- ── MOBILE OVERLAY ─────────────────────────────────────────── -->
+  <div class="sidebar-overlay" id="sidebar-overlay" aria-hidden="true"></div>
+
+  <script>
+    // ── Dark / light theme ──────────────────────────────────────
+    const themeToggleBtn = document.getElementById('theme-toggle');
+    const root = document.documentElement;
+    const saved = localStorage.getItem('de-prep-theme') || 'light';
+    root.setAttribute('data-theme', saved);
+    themeToggleBtn.textContent = saved === 'dark' ? '☀️' : '🌙';
+
+    themeToggleBtn.addEventListener('click', function () {
+      const cur = root.getAttribute('data-theme');
+      const next = cur === 'dark' ? 'light' : 'dark';
+      root.setAttribute('data-theme', next);
+      localStorage.setItem('de-prep-theme', next);
+      themeToggleBtn.textContent = next === 'dark' ? '☀️' : '🌙';
+    });
+
+    // ── Mobile sidebar toggle ──────────────────────────────────
+    const sidebarBtn   = document.getElementById('sidebar-toggle');
+    const sidebarEl    = document.getElementById('sidebar');
+    const overlayEl    = document.getElementById('sidebar-overlay');
+
+    function openSidebar() {
+      sidebarEl.classList.add('open');
+      overlayEl.classList.add('visible');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeSidebar() {
+      sidebarEl.classList.remove('open');
+      overlayEl.classList.remove('visible');
+      document.body.style.overflow = '';
+    }
+
+    sidebarBtn.addEventListener('click', function () {
+      sidebarEl.classList.contains('open') ? closeSidebar() : openSidebar();
+    });
+    overlayEl.addEventListener('click', closeSidebar);
+
+    // ── Active top-nav link ────────────────────────────────────
+    const currentPath = window.location.pathname;
+    document.querySelectorAll('.top-nav .nav-link').forEach(function (link) {
+      const href = link.getAttribute('href');
+      if (href && href !== '{{ "/" | relative_url }}' && currentPath.startsWith(href)) {
+        link.classList.add('active');
+      } else if (href === currentPath) {
+        link.classList.add('active');
+      }
+    });
+  </script>
+</body>
+</html>

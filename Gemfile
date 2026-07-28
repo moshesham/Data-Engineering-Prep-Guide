@@ -1,8 +1,5 @@
 source "https://rubygems.org"
 
-# This is the default theme for new Jekyll sites
-gem "jekyll-theme-minimal"
-
 # If you want to use GitHub Pages, uncomment the line below
 # To upgrade, run `bundle update github-pages`
 gem "github-pages", group: :jekyll_plugins
