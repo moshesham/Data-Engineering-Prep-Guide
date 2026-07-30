@@ -1,4 +1,4 @@
-# Meta Data Engineer Interview — Unified Study Guide
+#  Data Engineer Interview — Study Guide
 
 ⚠️ **Executable Pseudocode Disclaimer:** Code snippets and SQL queries in this guide are production-grade interview solutions designed to demonstrate conceptual logic, performance optimization, and algorithmic correctness. Table names (for example, `fact_reel_impressions`) and client event schemas are representative interview mocks.
 
