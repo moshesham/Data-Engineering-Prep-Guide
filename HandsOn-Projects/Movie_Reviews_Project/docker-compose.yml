@@ -1,0 +1,15 @@
+version: "3.9"
+services:
+  postgres:
+    image: postgres:16
+    container_name: movie-postgres
+    environment:
+      POSTGRES_USER: movie_user
+      POSTGRES_PASSWORD: movie_pass
+      POSTGRES_DB: movie_analytics
+    ports:
+      - "5432:5432"
+    volumes:
+      - movie_pgdata:/var/lib/postgresql/data
+volumes:
+  movie_pgdata:

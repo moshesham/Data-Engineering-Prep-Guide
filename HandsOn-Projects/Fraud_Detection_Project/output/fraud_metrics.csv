@@ -1,0 +1,5 @@
+metric,value
+roc_auc,0.9888072377792771
+pr_auc,0.8312685694643152
+best_threshold,0.6328286704884899
+min_total_cost,9090.0
