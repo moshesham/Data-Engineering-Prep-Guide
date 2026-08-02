@@ -1,0 +1,24 @@
+# Core dependency — provides FileAnalysis, RepositoryInfo, AnalysisConfig,
+# AgentFindings, AgentResponse, BaseAIAgent, and structured logging.
+omniscient-core>=0.2.0
+
+# YAML parsing (also a transitive dependency of omniscient-core)
+pyyaml>=6.0
+
+# ── Optional: required only for LLM-powered agents (Improvement 2) ──────────
+# Uncomment the provider(s) you want to use with tools/run_review.py.
+#
+# Ollama (local, privacy-first):
+#   langchain-community>=0.2.0
+#   langchain-core>=0.2.0
+#
+# OpenAI:
+#   langchain-openai>=0.1.0
+#   langchain-core>=0.2.0
+#
+# Anthropic:
+#   langchain-anthropic>=0.1.0
+#   langchain-core>=0.2.0
+#
+# GitHub API (for --post-pr in run_review.py):
+#   requests>=2.31.0
