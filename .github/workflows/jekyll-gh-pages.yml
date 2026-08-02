@@ -22,9 +22,26 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  # Content validation job — runs rule-based checks against _modules/ and _pages/
+  # before any Jekyll build is attempted.  Blocks deployment on BLOCKER findings.
+  content-validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install content-validation dependencies
+        run: pip install -r tools/requirements.txt
+      - name: Run content validator
+        run: python tools/validate_content.py --no-info
+
   # Build job
   build:
     runs-on: ubuntu-latest
+    needs: content-validate
     steps:
       - name: Checkout
         uses: actions/checkout@v4
